@@ -55,8 +55,7 @@ public class MorningstarRecordProcessor {
 
     public static void main(String[] args) throws Exception {
 
-        System.out.println("Starting main");
-
+        // Sample data
         String[] inRecs = new String[]{
                 "1, 4, AAPL, 100.2",
                 "2, 4, TROW, 60.5",
@@ -65,9 +64,8 @@ public class MorningstarRecordProcessor {
                 "This record won't be processed blah, blech"
         };
 
+        // Pretend we are receiving records from the stream - drive the MorningstarRecordProcessor class instance
         MorningstarRecordProcessor processor = new MorningstarRecordProcessor();
-
-        System.out.println("File size before first record " + processor.getFileSize());
 
         for (String rec : inRecs) {
             if (processor.isFileComplete()) {
@@ -76,6 +74,8 @@ public class MorningstarRecordProcessor {
             Integer recNum = processor.processRecord(rec);
             System.out.println(recNum + " out of " + processor.getFileSize() + " records processed.");
         }
+
+        System.out.println();
         System.out.println(processor.getFileReport());
     }
 }
