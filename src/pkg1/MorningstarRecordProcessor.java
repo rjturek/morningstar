@@ -1,15 +1,44 @@
 package pkg1;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
 public class MorningstarRecordProcessor {
 
     private Integer fileSize = -1;
+    private boolean fileIsComplete = false;
+    private Map<String, BigDecimal> stockMap = new HashMap<String, BigDecimal>();
 
-    public Boolean processRecord(String input) {
-        String[] elements = input.split(",");
-        for (String elem : elements) {
-            System.out.println(elem);
+    /**
+     *
+     * @param input
+     * @return File record number for this record.  null if file size is exceeded.
+     * @throws Exception
+     */
+
+    public Integer processRecord(String input) throws Exception {
+        if (isFileComplete()) {
+            return null;
         }
-        return false;
+
+        String[] elements = input.split(",");
+        Integer thisRecNum = Integer.parseInt(elements[0].trim());
+        Integer totalNumRecs = Integer.parseInt(elements[1].trim());
+        String stock = elements[2];
+        BigDecimal price = new BigDecimal(elements[3].trim());
+
+        if (fileSize == -1) {
+            fileSize = totalNumRecs;
+        }
+        else if (fileSize != totalNumRecs) {
+            throw new Exception("Record " + thisRecNum + "has erroneaous totalNumRecs");
+        }
+        else if (thisRecNum == fileSize) {
+            fileIsComplete = true;
+        }
+
+        return thisRecNum;
     }
 
     public Integer getFileSize() {
@@ -17,14 +46,14 @@ public class MorningstarRecordProcessor {
     }
 
     public Boolean isFileComplete() {
-        return false;
+        return fileIsComplete;
     }
 
     public String getFileReport() {
-        return "Here is your report";
+        return "Some report stuff goes here";
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         System.out.println("Starting main");
 
@@ -41,10 +70,11 @@ public class MorningstarRecordProcessor {
         System.out.println("File size before first record " + processor.getFileSize());
 
         for (String rec : inRecs) {
-            processor.processRecord(rec);
             if (processor.isFileComplete()) {
                 break;
             }
+            Integer recNum = processor.processRecord(rec);
+            System.out.println(recNum + " out of " + processor.getFileSize() + " records processed.");
         }
         System.out.println(processor.getFileReport());
     }
